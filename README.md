@@ -108,13 +108,28 @@ service, or containers on any cloud.
 The repository layer is implemented and verified, not a scaffold anymore.
 Every method behind `ProductRepository`, `CatalogRepository`,
 `VectorRepository`, and `AnnRepository` is real `pgxpool`/`pgvector` SQL —
-no `TODO`s left in any of them. Verified against a live Postgres/pgvector
-instance: `go build`/`go vet` clean across all four Go modules, every
-query confirmed tenant-scoped (`grep -A3 "func (r \*pg" .../repository/*.go`),
-the write path exercised through `scripts/seed-catalog.py`, and the
-worker/search-ranking vector path exercised both with synthetic vectors
-and with a real HTTP round-trip through a stand-in server matching the
-embedding server's `/embed` contract.
+no `TODO`s left in any of them. `go build`/`go vet` are clean across all
+four Go modules, and every query is tenant-scoped
+(`grep -A3 "func (r \*pg" .../repository/*.go`). None of that is just
+asserted — run `task dev:up && task migrate:up && task test:all` to see
+it for yourself:
+
+- [`catalog-writer-api/internal/repository/product_repository_test.go`](catalog-writer-api/internal/repository/product_repository_test.go) —
+  tenant A creates a product; tenant B's `Get`/`Update`/`Delete` on it
+  are all asserted to fail or no-op.
+- [`worker/internal/repository/vector_repository_test.go`](worker/internal/repository/vector_repository_test.go) —
+  `Upsert` called twice on the same `(product_id, embedding_type,
+  source_ref)` asserted to leave exactly one row; `HardDeleteByProduct`
+  under the wrong tenant asserted to be a no-op.
+- [`search-ranking-service/internal/repository/ann_repository_test.go`](search-ranking-service/internal/repository/ann_repository_test.go) —
+  tenant isolation and the `category_id`/`in_stock` pre-filters, asserted
+  against seeded rows designed to leak if either were broken.
+- Both [`worker/internal/repository/vector_repository_test.go`](worker/internal/repository/vector_repository_test.go)
+  and [`search-ranking-service/internal/client/embed_client_test.go`](search-ranking-service/internal/client/embed_client_test.go)
+  include a real `httptest.Server` matching the embedding server's
+  `/embed` contract, called by the real `EmbedClient`, feeding the real
+  repository — the "stand-in embedding server over HTTP" claim, made
+  concrete and reproducible instead of asserted in prose.
 
 Deliberately still stubbed: the cross-encoder rerank client (passthrough
 on ANN score, pending a model decision), the Redis-miss enrichment

@@ -65,3 +65,12 @@ tasks:
   vet:all:
     cmds:
       - go vet ./catalog-writer-api/... ./catalog-reader-api/... ./search-ranking-service/... ./worker/...
+
+  test:all:
+    desc: >
+      Run repository tests (tenant isolation, upsert idempotency, ANN
+      pre-filters, embed-client HTTP contract) against Postgres/pgvector.
+      Run `task dev:up && task migrate:up` first — tests skip (not fail)
+      if Postgres isn't reachable.
+    cmds:
+      - go test ./catalog-writer-api/... ./worker/... ./search-ranking-service/...
