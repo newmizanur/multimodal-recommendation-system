@@ -1,0 +1,23 @@
+image:
+  repository: multimodal-recsys/worker
+  tag: latest
+keda:
+  minReplicaCount: 0     # scales to zero when there's no lag
+  maxReplicaCount: 50
+  bootstrapServers: ""   # comma-separated Kafka brokers, e.g. "kafka-0:9092,kafka-1:9092"
+  topic: "catalog-events"
+  consumerGroup: "worker"
+  lagThreshold: "50"     # target unprocessed messages per replica
+resources:
+  requests: { cpu: 500m, memory: 512Mi }
+  limits: { cpu: "2", memory: 1Gi }
+env:
+  ENV: "production"
+  DATABASE_URL: ""
+  KAFKA_BROKERS: ""
+  KAFKA_TOPIC: "catalog-events"
+  KAFKA_CONSUMER_GROUP: "worker"
+  S3_BUCKET: ""
+  S3_ENDPOINT: ""          # set for MinIO/R2/etc.; leave blank for AWS S3
+  EMBEDDING_SERVER_URL: "http://embedding-server"
+  VECTOR_DB_URL: ""

@@ -1,0 +1,29 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: ${name}
+  namespace: ${namespace}
+spec:
+  kafka:
+    version: 3.7.0
+    replicas: ${replicas}
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+    config:
+      offsets.topic.replication.factor: ${replicas}
+      transaction.state.log.replication.factor: ${replicas}
+      default.replication.factor: ${replicas}
+      min.insync.replicas: 1
+    storage:
+      type: persistent-claim
+      size: 20Gi
+      deleteClaim: false
+  zookeeper:
+    replicas: ${replicas}
+    storage:
+      type: persistent-claim
+      size: 10Gi
+      deleteClaim: false

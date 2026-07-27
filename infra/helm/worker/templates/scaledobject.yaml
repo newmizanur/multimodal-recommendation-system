@@ -1,0 +1,23 @@
+# KEDA ScaledObject — scales the worker Deployment on Kafka consumer
+# group lag rather than CPU, so ingestion bursts (bulk catalog uploads)
+# scale out fast and idle periods scale to zero. This decouples ingestion
+# throughput from steady-state API serving capacity entirely, and works
+# the same way regardless of which Kafka-API-compatible broker backs it
+# (self-hosted, Redpanda, or a managed offering).
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: worker-scaledobject
+spec:
+  scaleTargetRef:
+    name: worker
+  minReplicaCount: {{ .Values.keda.minReplicaCount }}
+  maxReplicaCount: {{ .Values.keda.maxReplicaCount }}
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: {{ .Values.keda.bootstrapServers }}
+        consumerGroup: {{ .Values.keda.consumerGroup }}
+        topic: {{ .Values.keda.topic }}
+        lagThreshold: "{{ .Values.keda.lagThreshold }}"
+        allowIdleConsumers: "false"

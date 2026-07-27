@@ -1,0 +1,4 @@
+apiVersion: v2
+name: catalog-reader
+description: Catalog Reader API — public search entry point
+version: 0.1.0

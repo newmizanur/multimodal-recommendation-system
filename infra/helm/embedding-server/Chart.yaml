@@ -1,0 +1,4 @@
+apiVersion: v2
+name: embedding-server
+description: GPU inference server for SigLIP2 / Jina-CLIP-v2
+version: 0.1.0

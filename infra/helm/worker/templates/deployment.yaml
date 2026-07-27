@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+spec:
+  replicas: 0   # KEDA owns replica count once the ScaledObject is applied
+  selector:
+    matchLabels: { app: worker }
+  template:
+    metadata:
+      labels: { app: worker }
+    spec:
+      containers:
+        - name: worker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          envFrom:
+            - configMapRef: { name: worker-env }
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+      # GPU node pool is tainted; only Worker (and embedding-server)
+      # tolerate it so CPU-only API pods never land here and compete
+      # for GPU-adjacent capacity.
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+      nodeSelector:
+        workload: gpu

@@ -1,0 +1,9 @@
+image:
+  repository: multimodal-recsys/embedding-server
+  tag: latest
+replicaCount: 2
+env:
+  EMBEDDING_MODEL: "google/siglip2-so400m-patch14-384"
+resources:
+  requests: { cpu: "2", memory: 8Gi, nvidia.com/gpu: 1 }
+  limits: { cpu: "4", memory: 16Gi, nvidia.com/gpu: 1 }

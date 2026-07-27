@@ -1,0 +1,20 @@
+image:
+  repository: multimodal-recsys/catalog-writer-api
+  tag: latest
+replicaCount: 2
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 65
+resources:
+  requests: { cpu: 250m, memory: 256Mi }
+  limits: { cpu: "1", memory: 512Mi }
+env:
+  ENV: "production"
+  DATABASE_URL: ""        # set via ExternalSecret / Sealed Secret in real deploys
+  KAFKA_BROKERS: ""
+  KAFKA_TOPIC: "catalog-events"
+  S3_BUCKET: ""
+  S3_ENDPOINT: ""          # set for MinIO/R2/etc.; leave blank for AWS S3
+  DEMO_TENANT_API_KEY: ""  # scaffold-only static key; replace with a real tenant-key store (see internal/auth)

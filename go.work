@@ -1,0 +1,8 @@
+go 1.24
+
+use (
+	./catalog-reader-api
+	./catalog-writer-api
+	./search-ranking-service
+	./worker
+)

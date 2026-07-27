@@ -1,0 +1,4 @@
+apiVersion: v2
+name: worker
+description: Kafka-consuming embedding worker, KEDA-scaled on consumer lag
+version: 0.1.0

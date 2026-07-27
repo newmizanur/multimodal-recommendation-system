@@ -1,0 +1,67 @@
+# Root Taskfile — same tool/convention as the golang-clean-architecture-minimal
+# template this repo's service layout is based on, just namespaced per
+# service since this is a monorepo of four Go modules instead of one.
+#
+# Install: go install github.com/go-task/task/v3/cmd/task@latest
+# Install goose: go install github.com/pressly/goose/v3/cmd/goose@latest
+version: '3'
+
+vars:
+  DB_DSN: postgres://catalog:catalog@localhost:5432/catalog?sslmode=disable
+
+tasks:
+  dev:up:
+    desc: Start local Postgres (pgvector), Redis, Redpanda, MinIO
+    cmds:
+      - docker compose -f infra/docker-compose.dev.yml up -d
+
+  dev:down:
+    cmds:
+      - docker compose -f infra/docker-compose.dev.yml down
+
+  migrate:up:
+    desc: Apply all catalog + vector-store migrations (goose)
+    dir: catalog-writer-api/db/migrations
+    cmds:
+      - goose postgres "{{.DB_DSN}}" up
+
+  migrate:down:
+    dir: catalog-writer-api/db/migrations
+    cmds:
+      - goose postgres "{{.DB_DSN}}" down
+
+  writer:run:
+    dir: catalog-writer-api
+    cmds:
+      - go run ./cmd/server
+
+  reader:run:
+    dir: catalog-reader-api
+    cmds:
+      - go run ./cmd/server
+
+  ranking:run:
+    dir: search-ranking-service
+    cmds:
+      - go run ./cmd/server
+
+  worker:run:
+    dir: worker
+    cmds:
+      - go run ./cmd/worker
+
+  embed:run:
+    dir: embedding-server
+    cmds:
+      - uvicorn app.main:app --reload
+
+  build:all:
+    desc: go build every service module (requires go.work at repo root)
+    cmds:
+      # `./...` doesn't resolve from the workspace root itself (no go.mod
+      # there) — list each module explicitly instead.
+      - go build ./catalog-writer-api/... ./catalog-reader-api/... ./search-ranking-service/... ./worker/...
+
+  vet:all:
+    cmds:
+      - go vet ./catalog-writer-api/... ./catalog-reader-api/... ./search-ranking-service/... ./worker/...

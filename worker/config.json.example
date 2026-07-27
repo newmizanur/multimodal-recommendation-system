@@ -1,0 +1,10 @@
+{
+  "ENV": "development",
+  "DATABASE_URL": "postgres://catalog:catalog@localhost:5432/catalog?sslmode=disable",
+  "KAFKA_BROKERS": "localhost:9092",
+  "KAFKA_TOPIC": "catalog-events",
+  "KAFKA_CONSUMER_GROUP": "worker",
+  "S3_BUCKET": "product-images",
+  "S3_ENDPOINT": "http://localhost:9000",
+  "EMBEDDING_SERVER_URL": "http://localhost:8000"
+}

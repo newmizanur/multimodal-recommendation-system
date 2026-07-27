@@ -1,0 +1,10 @@
+{
+  "PORT": "8080",
+  "ENV": "development",
+  "DATABASE_URL": "postgres://catalog:catalog@localhost:5432/catalog?sslmode=disable",
+  "KAFKA_BROKERS": "localhost:9092",
+  "KAFKA_TOPIC": "catalog-events",
+  "S3_BUCKET": "product-images",
+  "S3_ENDPOINT": "http://localhost:9000",
+  "DEMO_TENANT_API_KEY": "acme-marketplace-dev-key"
+}

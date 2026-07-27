@@ -1,0 +1,13 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: ${name}
+  namespace: ${namespace}
+spec:
+  instances: ${instances}
+  bootstrap:
+    initdb:
+      database: catalog
+      owner: catalog
+  storage:
+    size: ${storage_gb}Gi

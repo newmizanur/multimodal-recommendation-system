@@ -1,0 +1,7 @@
+{
+  "PORT": "8081",
+  "ENV": "development",
+  "DATABASE_URL": "postgres://catalog:catalog@localhost:5432/catalog?sslmode=disable",
+  "SEARCH_RANKING_URL": "http://localhost:8082",
+  "DEMO_TENANT_API_KEY": "acme-marketplace-dev-key"
+}

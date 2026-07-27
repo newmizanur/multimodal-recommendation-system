@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: embedding-server
+spec:
+  # Own scaling, separate from Worker — ingestion bursts and query-time
+  # serving load this differently, so keep them independently sized
+  # even though both run on the same tainted GPU node pool.
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: { app: embedding-server }
+  template:
+    metadata:
+      labels: { app: embedding-server }
+    spec:
+      containers:
+        - name: embedding-server
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports: [{ containerPort: 8000 }]
+          envFrom:
+            - configMapRef: { name: embedding-server-env }
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8000 }
+            initialDelaySeconds: 30   # model load time
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+      nodeSelector:
+        workload: gpu

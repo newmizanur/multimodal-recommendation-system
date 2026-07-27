@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-writer
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: { app: catalog-writer }
+  template:
+    metadata:
+      labels: { app: catalog-writer }
+    spec:
+      containers:
+        - name: catalog-writer
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports: [{ containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: catalog-writer-env }
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8080 }

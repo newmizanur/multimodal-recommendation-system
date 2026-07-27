@@ -1,0 +1,48 @@
+# Local dev dependencies only — the Go/Python services themselves run
+# directly on the host (see README "Local dev quickstart") so you get
+# fast rebuild loops without a container rebuild per code change.
+#
+# Nothing here is AWS-specific: Redpanda speaks the Kafka wire protocol
+# (works with segmentio/kafka-go unchanged) and MinIO speaks the S3 API
+# (works with the AWS SDK unchanged, via S3_ENDPOINT). Swap either for a
+# managed service in real environments without touching application code.
+services:
+  # pgvector/pgvector ships the `vector` extension on top of stock
+  # Postgres — same image family, just with CREATE EXTENSION vector
+  # available. Nothing else about connecting to it changes.
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: catalog
+      POSTGRES_USER: catalog
+      POSTGRES_PASSWORD: catalog
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  redpanda:
+    image: redpandadata/redpanda:v24.1.1
+    command:
+      - redpanda start
+      - --smp 1
+      - --overprovisioned
+      - --node-id 0
+      - --kafka-addr PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr PLAINTEXT://localhost:9092
+    ports: ["9092:9092"]
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"   # S3 API — point S3_ENDPOINT at http://localhost:9000
+      - "9001:9001"   # web console
+
+volumes:
+  pgdata:

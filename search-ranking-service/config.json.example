@@ -1,0 +1,8 @@
+{
+  "PORT": "8082",
+  "ENV": "development",
+  "DATABASE_URL": "postgres://catalog:catalog@localhost:5432/catalog?sslmode=disable",
+  "REDIS_URL": "localhost:6379",
+  "EMBEDDING_SERVER_URL": "http://localhost:8000",
+  "RERANK_MODEL_URL": "http://localhost:8001"
+}

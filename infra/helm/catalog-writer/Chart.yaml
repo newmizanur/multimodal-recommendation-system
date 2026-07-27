@@ -1,0 +1,4 @@
+apiVersion: v2
+name: catalog-writer
+description: Catalog Writer API — single writer to the catalog DB
+version: 0.1.0
