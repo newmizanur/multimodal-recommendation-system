@@ -1,0 +1,45 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Local-only service config (copy config.json.example to config.json; the
+# example stays committed as the template, the real one is per-dev/per-env)
+config.json
+
+# Env / secrets
+.env
+.env.*
+
+# Claude Code local session state
+.claude/
+
+# Logs
+*.log
