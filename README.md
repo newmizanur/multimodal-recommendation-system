@@ -137,4 +137,5 @@ fallback in the search usecase, and a transactional outbox for the
 Postgres-write + Kafka-publish gap in `catalog-writer-api` (a crash
 between the two currently drops the event). The embedding server itself
 (FastAPI + SigLIP2) is implemented but hasn't been run end-to-end against
-the real model in this pass — see the article for why.
+the real model in this pass. See [article.md](article.md) for why, or read
+the published write-up on LinkedIn: <https://lnkd.in/p/gQc9f8MZ>
